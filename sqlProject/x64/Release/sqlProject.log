@@ -1,0 +1,13 @@
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(391,5): warning MSB8028: The intermediate directory (x64\Release\) contains files shared from another project (project.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  music_main.cpp
+c:\users\eilon cohen\source\repos\sqlproject\sqlproject\music_main.cpp(24): warning C4101: 'buff': unreferenced local variable
+c:\users\eilon cohen\source\repos\sqlproject\sqlproject\music_main.cpp(56): warning C4101: 'buff': unreferenced local variable
+c:\users\eilon cohen\source\repos\sqlproject\sqlproject\music_main.cpp(97): warning C4101: 'buff': unreferenced local variable
+c:\users\eilon cohen\source\repos\sqlproject\sqlproject\music_main.cpp(250): warning C4101: 'buff': unreferenced local variable
+c:\users\eilon cohen\source\repos\sqlproject\sqlproject\music_main.cpp(474): warning C4101: 'i': unreferenced local variable
+  Generating code
+  33 of 164 functions (20.1%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    50 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  sqlProject.vcxproj -> C:\Users\Eilon Cohen\source\repos\sqlProject\x64\Release\sqlProject.exe
