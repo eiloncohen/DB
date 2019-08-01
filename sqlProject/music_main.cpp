@@ -3,10 +3,843 @@
 #include <sstream>
 #include <string>
 #include <vector>
-/*Eilon Cohen 312534266
-Benjamin Koren 302273065*/
+
 using namespace std;
 
+void insert_quentitys(mysqlx_session_t* sess){
+
+	string str = "";
+	char err_msg[256] = {};
+	int err_code = 0;
+	mysqlx_result_t* res;
+	char* query = NULL;
+
+	//creration of an sql connection aka session to the mysql server
+	sess = mysqlx_get_session("localhost", DEFAULT_MYSQLX_PORT, "root", "root", "", err_msg, &err_code);
+	if (NULL == sess) {
+		cerr << err_msg << endl;
+		exit(err_code);
+	}
+	str = "DROP SCHEMA IF  EXISTS `my_db`;";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "CREATE SCHEMA IF NOT EXISTS `my_db`;";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "CREATE TABLE IF NOT EXISTS `my_db`.`album` (  `id` INT(11) NOT NULL AUTO_INCREMENT,  `album_name` VARCHAR(45) NULL DEFAULT NULL,  `start_date` DATE NULL DEFAULT NULL,  `end_date` DATE NULL DEFAULT NULL,  `num_of_songs` INT(11) NULL DEFAULT NULL,  PRIMARY KEY (`id`)) ENGINE = InnoDB AUTO_INCREMENT = 11;";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "CREATE TABLE IF NOT EXISTS `my_db`.`album_producer` ( `album_id` INT(11) NULL DEFAULT NULL, `producer_id` INT(11) NULL DEFAULT NULL,   INDEX `FK` (`album_id` ASC, `producer_id` ASC) VISIBLE) ENGINE = InnoDB;";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "CREATE TABLE IF NOT EXISTS `my_db`.`instrument_type` (  `id` INT(11) NOT NULL AUTO_INCREMENT, `description` VARCHAR(45) NULL DEFAULT NULL, PRIMARY KEY (`id`)) ENGINE = InnoDB AUTO_INCREMENT = 11;";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+	str = "CREATE TABLE IF NOT EXISTS `my_db`.`instruments_stock` ( `id` INT(11) NOT NULL AUTO_INCREMENT, `instrumen_type_id` INT(11) NULL DEFAULT NULL,  `manufacturer_id` INT(11) NULL DEFAULT NULL, PRIMARY KEY (`id`), INDEX `FK` (`instrumen_type_id` ASC, `manufacturer_id` ASC) VISIBLE) ENGINE = InnoDB AUTO_INCREMENT = 17;";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "CREATE TABLE IF NOT EXISTS `my_db`.`manufacturers` (`id` INT(11) NOT NULL AUTO_INCREMENT,  `manufacturer_name` VARCHAR(45) NULL DEFAULT NULL, PRIMARY KEY (`id`), INDEX `FK` (`manufacturer_name` ASC) VISIBLE) ENGINE = InnoDB AUTO_INCREMENT = 11;";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = " CREATE TABLE IF NOT EXISTS `my_db`.`musical_track` (`id` INT(11) NOT NULL AUTO_INCREMENT, `track_name` VARCHAR(45) NULL DEFAULT NULL, `author_id` INT(11) NULL DEFAULT NULL, `composer_id` INT(11) NULL DEFAULT NULL,  `track_type_id` INT(11) NULL DEFAULT NULL,  `duration` INT(45) NULL DEFAULT NULL,  `genre` VARCHAR(45) NULL DEFAULT NULL,  `recording_date` DATE NULL DEFAULT NULL,  `technician_id` INT(11) NULL DEFAULT NULL, PRIMARY KEY (`id`), INDEX `FK` (`author_id` ASC, `composer_id` ASC, `track_type_id` ASC, `technician_id` ASC) VISIBLE) ENGINE = InnoDB AUTO_INCREMENT = 11;";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+	str = " CREATE TABLE IF NOT EXISTS `my_db`.`musical_track` (`id` INT(11) NOT NULL AUTO_INCREMENT, `track_name` VARCHAR(45) NULL DEFAULT NULL, `author_id` INT(11) NULL DEFAULT NULL, `composer_id` INT(11) NULL DEFAULT NULL,  `track_type_id` INT(11) NULL DEFAULT NULL,  `duration` INT(45) NULL DEFAULT NULL,  `genre` VARCHAR(45) NULL DEFAULT NULL,  `recording_date` DATE NULL DEFAULT NULL,  `technician_id` INT(11) NULL DEFAULT NULL, PRIMARY KEY (`id`), INDEX `FK` (`author_id` ASC, `composer_id` ASC, `track_type_id` ASC, `technician_id` ASC) VISIBLE) ENGINE = InnoDB AUTO_INCREMENT = 11;";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = " CREATE TABLE IF NOT EXISTS `my_db`.`musician_instrument` ( `musician_id` INT(11) NULL DEFAULT NULL, `instrument_id` INT(11) NULL DEFAULT NULL,   INDEX `FK` (`musician_id` ASC, `instrument_id` ASC) VISIBLE) ENGINE = InnoDB;";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "CREATE TABLE IF NOT EXISTS `my_db`.`person` ( `id` INT(11) NOT NULL AUTO_INCREMENT,  `name` VARCHAR(45) NULL DEFAULT NULL,  `address` VARCHAR(45) NULL DEFAULT NULL, `phone` VARCHAR(45) NULL DEFAULT NULL, PRIMARY KEY (`id`)) ENGINE = InnoDB AUTO_INCREMENT = 11;";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = " CREATE TABLE IF NOT EXISTS `my_db`.`role` ( `id` INT(11) NOT NULL AUTO_INCREMENT,  `job_description` VARCHAR(45) NULL DEFAULT NULL, PRIMARY KEY (`id`), INDEX `Key` (`job_description` ASC) VISIBLE) ENGINE = InnoDB AUTO_INCREMENT = 12;";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "CREATE TABLE IF NOT EXISTS `my_db`.`roles_of_person` ( `person_id` INT(11) NULL DEFAULT NULL, `role_id` INT(11) NULL DEFAULT NULL,   INDEX `FK` (`person_id` ASC, `role_id` ASC) VISIBLE) ENGINE = InnoDB; ";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = " CREATE TABLE IF NOT EXISTS `my_db`.`track_instruments` ( `track_id` INT(11) NULL DEFAULT NULL, `instrument_id` INT(11) NULL DEFAULT NULL,   INDEX `FK` (`track_id` ASC, `instrument_id` ASC) VISIBLE) ENGINE = InnoDB;";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+	str = " CREATE TABLE IF NOT EXISTS `my_db`.`track_musician` ( `track_id` INT(11) NULL DEFAULT NULL, `musician_id` INT(11) NULL DEFAULT NULL,   INDEX `FK` (`track_id` ASC, `musician_id` ASC) VISIBLE) ENGINE = InnoDB;";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = " CREATE TABLE IF NOT EXISTS `my_db`.`track_type` (  `id` INT(11) NOT NULL AUTO_INCREMENT, `type` VARCHAR(45) NULL DEFAULT NULL, PRIMARY KEY (`id`)) ENGINE = InnoDB AUTO_INCREMENT = 4;";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = " CREATE TABLE IF NOT EXISTS `my_db`.`tracks_album` ( `track_id` INT(11) NULL DEFAULT NULL, `album_id` INT(11) NULL DEFAULT NULL,   INDEX `FK` (`track_id` ASC, `album_id` ASC) VISIBLE) ENGINE = InnoDB;";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = " INSERT INTO `my_db`.`album` (`id`,`album_name`, `start_date`, `end_date`, `num_of_songs`) VALUES (1,'Margalit_Zanani_hameitav', '2015-01-01', '2017-01-01', '3');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`album` (`id`,`album_name`, `start_date`, `end_date`, `num_of_songs`) VALUES (2,'Yehuda_Poliker_efer_ve'avak', '1988 - 01 - 01', '1988 - 12 - 31', '5');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`album` (`id`,`album_name`, `start_date`, `end_date`, `num_of_songs`) VALUES (3,'kaveret_sipurei_fogi', '1973-01-01', '1973-12-31', '4');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str ="INSERT INTO `my_db`.`album` (`id`,`album_name`, `start_date`, `end_date`, `num_of_songs`) VALUES(4,'Hava_Alberstein', '1975-01-01', '1975-12-31', '2')";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`album` (`id`,`album_name`, `start_date`, `end_date`, `num_of_songs`) VALUES(5,'Shlomo_Arzi_Drachim', '1979-01-01', '1979-12-31', '7');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`album` (`id`,`album_name`, `start_date`, `end_date`, `num_of_songs`) VALUES(6,'Meir_Banai_geshem', '1987-01-01', '1987-12-31', '1'); ";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`album` (`id`,`album_name`, `start_date`, `end_date`, `num_of_songs`) VALUES(7,'Benzin_24_shaot', '1982-01-01', '1982-12-31', '4'); ";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`album` (`id`,`album_name`, `start_date`, `end_date`, `num_of_songs`) VALUES(8,'Eyal_Golan_biladaich', '1997-01-01', '1977-12-31', '9');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`album` (`id`,`album_name`, `start_date`, `end_date`, `num_of_songs`) VALUES(9,'Tango_sidur_Kavua', '1984-01-01', '1984-12-31', '8');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`album` (`id`,`album_name`, `start_date`, `end_date`, `num_of_songs`) VALUES(10,'Zila_Dagan_Zila_Dagan', '1970-01-01', '1970-12-31', '6');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+	
+
+	str = "INSERT INTO `my_db`.`album_producer` (`id`,`album_id`, `producer_id`) VALUES(1, 1);";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`album_producer` (`album_id`, `producer_id`) VALUES(2, 3);";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`album_producer` (`album_id`, `producer_id`) VALUES(2, 2);";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`album_producer` (`album_id`, `producer_id`) VALUES(3, 3);";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`album_producer` (`album_id`, `producer_id`) VALUES(4, 1);";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`album_producer` (`album_id`, `producer_id`) VALUES(5, 2);";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`album_producer` (`album_id`, `producer_id`) VALUES(2, 3);";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`album_producer` (`album_id`, `producer_id`) VALUES(6, 3);";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`album_producer` (`album_id`, `producer_id`) VALUES(7, 1);";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`album_producer` (`album_id`, `producer_id`) VALUES(2, 3);";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`album_producer` (`album_id`, `producer_id`) VALUES(7, 2);";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`album_producer` (`album_id`, `producer_id`) VALUES(8, 3);";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`album_producer` (`album_id`, `producer_id`) VALUES(9, 1);";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`album_producer` (`album_id`, `producer_id`) VALUES(10, 2);";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`instrument_type` (`id`, `description`) VALUES(1, 'Electric Guitar');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+
+	str = "INSERT INTO `my_db`.`instrument_type` (`id`, `description`) VALUES(1, 'Electric Guitar');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+
+	str = "INSERT INTO `my_db`.`instrument_type` (`id`, `description`) VALUES(2, 'Classic Guitar');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`instrument_type` (`id`, `description`) VALUES(2, 'Classic Guitar');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`instrument_type` (`id`, `description`) VALUES(3, 'Acoustic Guitar');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`instrument_type` (`id`, `description`) VALUES(4, 'Flute');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`instrument_type` (`id`, `description`) VALUES(5, 'drum');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`instrument_type` (`id`, `description`) VALUES(6, 'saxophone');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`instrument_type` (`id`, `description`) VALUES(7, 'bass guitar');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`instrument_type` (`id`, `description`) VALUES(8, 'piano');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`instrument_type` (`id`, `description`) VALUES(9, 'Violin');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`instrument_type` (`id`, `description`) VALUES(10, 'hood');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+
+	str = "INSERT INTO `my_db`.`instruments_stock` (`id`, `instrumen_type_id`, `manufacturer_id`) VALUES(1, 1, 1);";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`instruments_stock` (`id`, `instrumen_type_id`, `manufacturer_id`) VALUES(2, 3, 4)";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`instruments_stock` (`id`, `instrumen_type_id`, `manufacturer_id`) VALUES(3, 2, 3)";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`instruments_stock` (`id`, `instrumen_type_id`, `manufacturer_id`) VALUES(4, 4, 2)";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`instruments_stock` (`id`, `instrumen_type_id`, `manufacturer_id`) VALUES(5, 5, 5)";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`instruments_stock` (`id`, `instrumen_type_id`, `manufacturer_id`) VALUES(7, 7, 8)";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`instruments_stock` (`id`, `instrumen_type_id`, `manufacturer_id`) VALUES(8, 6, 7)";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`instruments_stock` (`id`, `instrumen_type_id`, `manufacturer_id`) VALUES(9, 7, 9)";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`instruments_stock` (`id`, `instrumen_type_id`, `manufacturer_id`) VALUES(10, 8, 9)";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+
+	str = "INSERT INTO `my_db`.`instruments_stock` (`id`, `instrumen_type_id`, `manufacturer_id`) VALUES(11, 9, 8)";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`instruments_stock` (`id`, `instrumen_type_id`, `manufacturer_id`) VALUES(12, 5, 1)";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`instruments_stock` (`id`, `instrumen_type_id`, `manufacturer_id`) VALUES(13, 9, 10)";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`instruments_stock` (`id`, `instrumen_type_id`, `manufacturer_id`) VALUES(14, 7, 10)";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`manufacturers` (`id`, `manufacturer_name`) VALUES(1, 'manufacturer1');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`manufacturers` (`id`, `manufacturer_name`) VALUES(2, 'manufacturer2');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`manufacturers` (`id`, `manufacturer_name`) VALUES(3, 'manufacturer3');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`manufacturers` (`id`, `manufacturer_name`) VALUES(4, 'manufacturer4');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`manufacturers` (`id`, `manufacturer_name`) VALUES(5, 'manufacturer5');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`manufacturers` (`id`, `manufacturer_name`) VALUES(6, 'manufacturer6');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`manufacturers` (`id`, `manufacturer_name`) VALUES(7, 'manufacturer7');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`manufacturers` (`id`, `manufacturer_name`) VALUES(8, 'manufacturer8');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`manufacturers` (`id`, `manufacturer_name`) VALUES(9, 'manufacturer9');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`manufacturers` (`id`, `manufacturer_name`) VALUES(10, 'manufacturer10');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`musical_track` (`id`,`track_name`, `author_id`, `composer_id`,`track_type_id`,`duration`,`genre`,`recording_date`,`technician_id`) VALUES(1, 'basbusa',1,2,1,120,'classic','1978-12-05',11);";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`musical_track` (`id`,`track_name`, `author_id`, `composer_id`,`track_type_id`,`duration`,`genre`,`recording_date`,`technician_id`) VALUES(2, 'ahim badam',2,2,1,130,'hiphop','1978-11-05',1);";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`musical_track` (`id`,`track_name`, `author_id`, `composer_id`,`track_type_id`,`duration`,`genre`,`recording_date`,`technician_id`) VALUES(3,'nahon leHayom',3,2,2,170,'classic','1978-01-05',11);";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`musical_track` (`id`,`track_name`, `author_id`, `composer_id`,`track_type_id`,`duration`,`genre`,`recording_date`,`technician_id`) VALUES(4, 'haver v-heah',4,2,2,170,'classic','1978-12-05',1);";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+
+	str = "INSERT INTO `my_db`.`musical_track` (`id`,`track_name`, `author_id`, `composer_id`,`track_type_id`,`duration`,`genre`,`recording_date`,`technician_id`) VALUES(5, 'marlen', 1, 2, 3, 200, 'rock', '1987-01-05', 1);";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`musical_track` (`id`,`track_name`, `author_id`, `composer_id`,`track_type_id`,`duration`,`genre`,`recording_date`,`technician_id`) VALUES(6,'Badad',2,2,3,220,'classic','1975-09-02',11);";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`musical_track` (`id`,`track_name`, `author_id`, `composer_id`,`track_type_id`,`duration`,`genre`,`recording_date`,`technician_id`) VALUES(7,'shar MeHalev',3,2,1,123,'hiphop','1988-08-30',1);";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`musical_track` (`id`,`track_name`, `author_id`, `composer_id`,`track_type_id`,`duration`,`genre`,`recording_date`,`technician_id`) VALUES(8,'disco menayek',4,2,1,90,'rock','1985-03-15',11);";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`musical_track` (`id`,`track_name`, `author_id`, `composer_id`,`track_type_id`,`duration`,`genre`,`recording_date`,`technician_id`) VALUES(8,'disco menayek',4,2,1,90,'rock','1985-03-15',11);";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`musical_track` (`id`,`track_name`, `author_id`, `composer_id`,`track_type_id`,`duration`,`genre`,`recording_date`,`technician_id`) VALUES(9, 'Ad matai', 3, 2, 2, 147, 'metal','1992-06-05', 1);";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`musical_track` (`id`,`track_name`, `author_id`, `composer_id`,`track_type_id`,`duration`,`genre`,`recording_date`,`technician_id`) VALUES(9, 'Ad matai', 3, 2, 2, 147, 'metal','1992-06-05', 1);";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`musical_track` (`id`,`track_name`, `author_id`, `composer_id`,`track_type_id`,`duration`,`genre`,`recording_date`,`technician_id`) VALUES(10,'kama od',4,2,3,300,'rock','1995-11-05',1);";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+
+	str = "INSERT INTO `my_db`.`musician_instrument` (`musician_id`, `instrument_id`) VALUES(1,1);";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`musician_instrument` (`musician_id`, `instrument_id`) VALUES(1,2);";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`musician_instrument` (`musician_id`, `instrument_id`) VALUES(2,3);";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`musician_instrument` (`musician_id`, `instrument_id`) VALUES(2,4);";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`musician_instrument` (`musician_id`, `instrument_id`) VALUES(3,5);";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`musician_instrument` (`musician_id`, `instrument_id`) VALUES(3,6);";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`musician_instrument` (`musician_id`, `instrument_id`) VALUES(3,7);";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`musician_instrument` (`musician_id`, `instrument_id`) VALUES(4,8);";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`musician_instrument` (`musician_id`, `instrument_id`) VALUES(4,3);";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`musician_instrument` (`musician_id`, `instrument_id`) VALUES(5,9);";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`musician_instrument` (`musician_id`, `instrument_id`) VALUES(6,10);";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+
+
+	str = "INSERT INTO `my_db`.`person` (`id`, `name`, `address`, `phone`) VALUES(1,'Nissim','gaza','052-9511114');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	//if (res == NULL)
+	//{
+	//	cout << "error";
+	//}
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`person` (`id`, `name`, `address`, `phone`) VALUES(2,'Yossi','Netanya','052-9511114');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`person` (`id`, `name`, `address`, `phone`) VALUES(3,'David','Tel-Aviv','052-9876543');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`person` (`id`, `name`, `address`, `phone`) VALUES(4,'Yaki','Zoran','052-9497893');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+
+	str = "INSERT INTO `my_db`.`person` (`id`, `name`, `address`, `phone`) VALUES(5,'Daniel','Jerusalem','053-9874125');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`person` (`id`, `name`, `address`, `phone`) VALUES('6', 'Shimon', 'Ramat-Ha'sharon', '052-8796542');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`person` (`id`, `name`, `address`, `phone`) VALUES('7', 'linoy', 'Tel-Aviv', '052-1234789');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`person` (`id`, `name`, `address`, `phone`) VALUES('8', 'Joni', 'ramla', '053-2314586');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`person` (`id`, `name`, `address`, `phone`) VALUES('9', 'mohamad', 'lod', '054-5214533');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`person` (`id`, `name`, `address`, `phone`) VALUES('10', 'Fadi', 'Ara', '052-8749234');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`person` (`id`, `name`, `address`, `phone`) VALUES('11', 'michael', 'hodash', '052-5436910');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`role` (`id`, `job_description`) VALUES('1', 'technician');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`role` (`id`, `job_description`) VALUES('2', 'producer');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`role` (`id`, `job_description`) VALUES('3', 'composer');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`role` (`id`, `job_description`) VALUES('4', 'guitarist');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`role` (`id`, `job_description`) VALUES('5', 'bassist');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`role` (`id`, `job_description`) VALUES('6', 'pianist');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`role` (`id`, `job_description`) VALUES('7', 'First voice singer');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`role` (`id`, `job_description`) VALUES('8', 'Second voice singer');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`role` (`id`, `job_description`) VALUES('9', 'singer');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`role` (`id`, `job_description`) VALUES('10', 'author');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`role` (`id`, `job_description`) VALUES('11', 'impresario');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+
+	str = "INSERT INTO `my_db`.`roles_of_person` (`person_id`, `role_id`) VALUES('1', '1');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`roles_of_person` (`person_id`, `role_id`) VALUES('1', '2');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`roles_of_person` (`person_id`, `role_id`) VALUES('1', '11');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`roles_of_person` (`person_id`, `role_id`) VALUES('2', '2');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`roles_of_person` (`person_id`, `role_id`) VALUES('2', '3');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`roles_of_person` (`person_id`, `role_id`) VALUES('2', '11');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`roles_of_person` (`person_id`, `role_id`) VALUES('3', '2');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`roles_of_person` (`person_id`, `role_id`) VALUES('3', '4');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`roles_of_person` (`person_id`, `role_id`) VALUES('3', '5');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`roles_of_person` (`person_id`, `role_id`) VALUES('3', '11');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`roles_of_person` (`person_id`, `role_id`) VALUES('4', '5');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`roles_of_person` (`person_id`, `role_id`) VALUES('4', '11');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`roles_of_person` (`person_id`, `role_id`) VALUES('5', '7');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`roles_of_person` (`person_id`, `role_id`) VALUES('6', '8');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`roles_of_person` (`person_id`, `role_id`) VALUES('7', '9');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`roles_of_person` (`person_id`, `role_id`) VALUES('8', '9');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`roles_of_person` (`person_id`, `role_id`) VALUES('8', '10');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`roles_of_person` (`person_id`, `role_id`) VALUES('9', '1');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`track_instruments` (`track_id`, `instrument_id`) VALUES('1', '2');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`track_instruments` (`track_id`, `instrument_id`) VALUES('2', '4');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`track_instruments` (`track_id`, `instrument_id`) VALUES('3', '5');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`track_instruments` (`track_id`, `instrument_id`) VALUES('3', '6');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`track_instruments` (`track_id`, `instrument_id`) VALUES('3', '8');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`track_instruments` (`track_id`, `instrument_id`) VALUES('4', '1');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`track_instruments` (`track_id`, `instrument_id`) VALUES('4', '3');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`track_instruments` (`track_id`, `instrument_id`) VALUES('4', '7');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`track_instruments` (`track_id`, `instrument_id`) VALUES('5', '2');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`track_instruments` (`track_id`, `instrument_id`) VALUES('5', '8');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`track_instruments` (`track_id`, `instrument_id`) VALUES('6', '8');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`track_instruments` (`track_id`, `instrument_id`) VALUES('7', '4');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`track_instruments` (`track_id`, `instrument_id`) VALUES('8', '3');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`track_instruments` (`track_id`, `instrument_id`) VALUES('9', '5');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`track_instruments` (`track_id`, `instrument_id`) VALUES('10', '3');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`track_musician` (`track_id`, `musician_id`) VALUES('1', '2');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`track_musician` (`track_id`, `musician_id`) VALUES('1', '5');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`track_musician` (`track_id`, `musician_id`) VALUES('2', '1');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`track_musician` (`track_id`, `musician_id`) VALUES('2', '3');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`track_musician` (`track_id`, `musician_id`) VALUES('2', '4');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`track_musician` (`track_id`, `musician_id`) VALUES('3', '3');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`track_musician` (`track_id`, `musician_id`) VALUES('3', '4');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`track_musician` (`track_id`, `musician_id`) VALUES('3', '5');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`track_musician` (`track_id`, `musician_id`) VALUES('3', '6');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`track_musician` (`track_id`, `musician_id`) VALUES('3', '7');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`track_musician` (`track_id`, `musician_id`) VALUES('4', '3');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`track_musician` (`track_id`, `musician_id`) VALUES('4', '6');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`track_musician` (`track_id`, `musician_id`) VALUES('4', '7');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`track_musician` (`track_id`, `musician_id`) VALUES('4', '8');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`track_musician` (`track_id`, `musician_id`) VALUES('5', '6');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`track_musician` (`track_id`, `musician_id`) VALUES('6', '7');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`track_musician` (`track_id`, `musician_id`) VALUES('7', '8');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`track_musician` (`track_id`, `musician_id`) VALUES('9', '7');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`track_musician` (`track_id`, `musician_id`) VALUES('10', '5');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`track_type` (`id`, `type`) VALUES('1', 'vocal');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`track_type` (`id`, `type`) VALUES('2', 'instrumental');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`track_type` (`id`, `type`) VALUES('3', 'song');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`tracks_album` (`track_id`, `album_id`) VALUES('1', '1');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`tracks_album` (`track_id`, `album_id`) VALUES('1', '1');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`tracks_album` (`track_id`, `album_id`) VALUES('1', '2');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+
+	str = "INSERT INTO `my_db`.`tracks_album` (`track_id`, `album_id`) VALUES('1', '3');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`tracks_album` (`track_id`, `album_id`) VALUES('1', '6');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`tracks_album` (`track_id`, `album_id`) VALUES('2', '1');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`tracks_album` (`track_id`, `album_id`) VALUES('2', '2');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`tracks_album` (`track_id`, `album_id`) VALUES('2', '3');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`tracks_album` (`track_id`, `album_id`) VALUES('2', '4');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`tracks_album` (`track_id`, `album_id`) VALUES('2', '5');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`tracks_album` (`track_id`, `album_id`) VALUES('2', '6');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`tracks_album` (`track_id`, `album_id`) VALUES('3', '1');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`tracks_album` (`track_id`, `album_id`) VALUES('4', '5');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`tracks_album` (`track_id`, `album_id`) VALUES('5', '2');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`tracks_album` (`track_id`, `album_id`) VALUES('6', '4');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`tracks_album` (`track_id`, `album_id`) VALUES('6', '8');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`tracks_album` (`track_id`, `album_id`) VALUES('7', '8');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`tracks_album` (`track_id`, `album_id`) VALUES('8', '9');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`tracks_album` (`track_id`, `album_id`) VALUES('9', '8');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`tracks_album` (`track_id`, `album_id`) VALUES('9', '9');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`tracks_album` (`track_id`, `album_id`) VALUES('9', '10');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+	str = "INSERT INTO `my_db`.`tracks_album` (`track_id`, `album_id`) VALUES('10', '1');";
+	res = mysqlx_sql(sess, str.c_str(), MYSQLX_NULL_TERMINATED);
+	str.clear();
+
+
+	/*str = "";
+	query = new char[str.length() + 1];
+	strcpy_s(query, str.length() + 1, str.c_str());
+	res = mysqlx_sql(sess, query, MYSQLX_NULL_TERMINATED);
+	delete[] query;
+	str.clear();
+
+	str = "";
+	query = new char[str.length() + 1];
+	strcpy_s(query, str.length() + 1, str.c_str());
+	res = mysqlx_sql(sess, query, MYSQLX_NULL_TERMINATED);
+	delete[] query;
+	str.clear();*/
+}
 
 void queryOne(string first, string second, mysqlx_session_t* sess) {
 
@@ -485,7 +1318,7 @@ int main() {
 		exit(1);
 	}
 
-
+	insert_quentitys(sess);
 
 	while (x)
 	{
@@ -653,112 +1486,5 @@ int main() {
 
 	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-	/*
-	char err_msg[256] = {};
-	mysqlx_error_t** err_code = 0;
-
-	//creration of an sql connection aka session to the mysql server
-	mysqlx_session_t* sess = mysqlx_get_session("localhost", DEFAULT_MYSQLX_PORT, "root", "root", "studio",err_code);
-	if (NULL == sess) {
-	cerr << err_msg << endl;
-	exit(1);
-	}
-
-	char query1[] = { "show tables" };
-
-	mysqlx_result_t* res = mysqlx_sql(sess, query1, MYSQLX_NULL_TERMINATED);
-
-	if (NULL != res) {
-	char buff[256]; size_t size = 0;
-
-	do {
-	mysqlx_row_t* row = mysqlx_row_fetch_one(res);
-	while (NULL != row) {
-	size = sizeof(buff);
-	mysqlx_get_bytes(row, 0, 0, buff, &size);
-	cout << buff << endl;
-	row = mysqlx_row_fetch_one(res);
-	}
-	} while (RESULT_OK == mysqlx_next_result(res));
-	}
-	else {
-	cerr << mysqlx_error_message(sess) << endl;
-	exit(mysqlx_error_num(sess));
-	}
-
-	cout << "------------------------" << endl;
-
-	char query2[] = {
-	"SELECT actor_id, first_name, last_name, concat(last_update,'') as last_update "\
-	"FROM `actor` "\
-	"WHERE actor_id > ?;"
-	};
-
-	//res = mysqlx_sql(sess, query2, MYSQLX_NULL_TERMINATED);
-	mysqlx_stmt_t* stmt = mysqlx_sql_new(sess, query2, MYSQLX_NULL_TERMINATED);
-	if (RESULT_OK != mysqlx_stmt_bind(stmt, PARAM_SINT(100), PARAM_END)) {
-	cerr << "error binding parameters\n";
-	exit(2);
-	}
-	res = mysqlx_execute(stmt);
-
-	if (NULL != res) {
-	char buff[256]; size_t size = 0;
-	uint32_t cols = mysqlx_column_get_count(res);
-
-	do {
-	mysqlx_row_t* row = mysqlx_row_fetch_one(res);
-	while (NULL != row) {
-	for (uint32_t i = 0; i < cols; ++i) {
-	int64_t id;
-	size = sizeof(buff);
-	if (i > 0)
-	mysqlx_get_bytes(row, i, 0, buff, &size);
-	else mysqlx_get_sint(row, 0, &id);
-
-	switch (i) {
-	case 0:
-	/*id = 0;
-	memcpy(&id, buff, size);*/
-
-	/*cout << id;
-	break;
-	case 1:
-	case 2:
-	case 3:
-	cout << buff;
-	break;
-	default:
-	cout << "undefined";
-	}
-	if (9 > size)
-	cout << "\t";
-	cout << "\t|\t";
-	}
-	cout << endl;
-	row = mysqlx_row_fetch_one(res);
-	}
-	} while (RESULT_OK == mysqlx_next_result(res));
-	}
-	else {
-	cerr << mysqlx_error_message(sess) << endl;
-	exit(mysqlx_error_num(sess));
-	}
-
-	mysqlx_session_close(sess);
-
-	getchar();*/
 	return 0;
 }
